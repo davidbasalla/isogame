@@ -56,30 +56,24 @@ function initGeo() {
     ['W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W','W']
   ]
 
-
   var map = new Map(map_file)
 
-  initGrid(map);
-  initCubes(map);
+  init_ground(map);
+  init_objects(map);
 }
 
-function initGrid(map) {
-  var size = map.width * 25, step = 50;
-  var geometry = new THREE.Geometry();
-  geometry.receiveShadow = true;
+function init_ground(map) {
+  var geometry = new THREE.PlaneGeometry( 1000, 1000, 20, 20 );
+  var material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );
+  var plane = new THREE.Mesh( geometry, material );
 
-  for ( var i = - size; i <= size; i += step ) {
-    geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-    geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-    geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-    geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-  }
-  var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } );
-  var line = new THREE.LineSegments( geometry, material );
-  scene.add( line );
+  plane.rotation.x = -Math.PI/2;
+  plane.position.y = 0;
+
+  scene.add( plane );
 }
 
-function initCubes(map) {
+function init_objects(map) {
   for ( var i = 0; i < map.width; i ++ ) {
     for ( var j = 0; j < map.height; j ++ ) {
       var block = map.blocks[i][j];
