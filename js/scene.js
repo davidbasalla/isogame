@@ -32,16 +32,26 @@ function init() {
 }
 
 function initGeo() {
-  initGrid();
-  initCubes();
+
+  var map =  [['W','W','W','W','D','D','W','W','W','W'],
+              ['W','_','_','_','_','_','_','_','_','W'],
+              ['W','_','P','_','_','_','_','P','_','W'],
+              ['W','_','_','_','_','_','_','_','_','W'],
+              ['W','_','_','_','_','_','_','_','B','W'],
+              ['W','_','_','_','_','_','_','_','B','W'],
+              ['W','_','_','_','_','_','_','_','_','W'],
+              ['W','_','P','_','_','_','_','P','_','W'],
+              ['W','_','_','_','_','_','_','_','_','W'],
+              ['W','W','W','W','D','D','W','W','W','W']]
+
+  initGrid(map);
+  initCubes(map);
 }
 
-function initGrid() {
-  var size = 500, step = 50;
+function initGrid(map) {
+  var size = map.length * 25, step = 50;
   var geometry = new THREE.Geometry();
   geometry.receiveShadow = true;
-
-
 
   for ( var i = - size; i <= size; i += step ) {
     geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
@@ -54,29 +64,46 @@ function initGrid() {
   scene.add( line );
 }
 
-function initCubes() {
+function initCubes(map) {
   var geometry = new THREE.BoxGeometry( 50, 50, 50 );
   geometry.castShadow = true;
   geometry.receiveShadow = true;
 
   var material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );
 
-  for ( var i = 0; i < 100; i ++ ) {
-    var cube = new THREE.Mesh( geometry, material );
-    cube.scale.y = Math.floor( Math.random() * 2 + 1 );
-    cube.position.x = Math.floor( ( Math.random() * 1000 - 500 ) / 50 ) * 50 + 25;
-    cube.position.y = ( cube.scale.y * 50 ) / 2;
-    cube.position.z = Math.floor( ( Math.random() * 1000 - 500 ) / 50 ) * 50 + 25;
-    scene.add( cube );
+  for ( var i = 0; i < map.length; i ++ ) {
+    for ( var j = 0; j < map.length; j ++ ) {
+      var block = map[i][j];
+
+      if (block === 'W') {
+        var cube = new THREE.Mesh( geometry, material );
+        cube.scale.y = 2;
+        cube.position.x = i * 50 - 250 + 25;
+        cube.position.y = ( cube.scale.y * 50 ) / 2;
+        cube.position.z = j * 50 - 250 + 25;
+        scene.add( cube );
+      }
+    }
   }
+  // for ( var i = 0; i < 100; i ++ ) {
+  //   var cube = new THREE.Mesh( geometry, material );
+  //   cube.scale.y = Math.floor( Math.random() * 2 + 1 );
+  //   cube.position.x = Math.floor( ( Math.random() * 1000 - 500 ) / 50 ) * 50 + 25;
+  //   cube.position.y = ( cube.scale.y * 50 ) / 2;
+  //   cube.position.z = Math.floor( ( Math.random() * 1000 - 500 ) / 50 ) * 50 + 25;
+  //   scene.add( cube );
+  // }
 }
+
+
+
 
 function initLights() {
   var ambientLight = new THREE.AmbientLight( Math.random() * 0x10 );
   scene.add( ambientLight );
 
 
-  var light = new THREE.PointLight( 0xff0000, 1, 1000 );
+  var light = new THREE.PointLight( 0xffffff, 1, 1000 );
   light.position.set( 10000, 10000, 5000 );
   light.castShadow = true;
 
@@ -113,7 +140,7 @@ function onWindowResize() {
 }
 
 function animate() {
-  requestAnimationFrame( animate );
+  // requestAnimationFrame( animate );
   render();
 }
 
