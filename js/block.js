@@ -1,18 +1,17 @@
-var Block = function (x, z) {
-  this.map_offset_x = -500;
-  this.map_offset_z = -500;
-  this.tile_size = 25;
+var Block = function (x, z, scene) {
+  this.map_offset_x = -5.25;
+  this.map_offset_z = -5.25;
+  this.tile_size = 0.5;
 
-  this.pos_x = this.x * this.tile_size * 2 + this.map_offset_x + this.tile_size;
+  this.pos_x = this.x * this.tile_size + this.map_offset_x + this.tile_size;
   this.pos_y = (this.y || 0) + this.height * this.tile_size;
-  this.pos_z = this.z * this.tile_size * 2 + this.map_offset_z + this.tile_size;
+  this.pos_z = this.z * this.tile_size + this.map_offset_z + this.tile_size;
 
-  this.shape = new THREE.Mesh(this.geometry, this.material);
-  this.shape.scale.y = this.height;
-  this.shape.position.x = this.pos_x;
-  this.shape.position.y = this.pos_y;
-  this.shape.position.z = this.pos_z;
+  var shape = BABYLON.Mesh.CreateBox('sphere1', 0.5, this.scene);
+  shape.position.x = this.pos_x;
+  shape.position.y = 0.5;
+  shape.position.z = this.pos_z;
+  shape.scaling.y = 3;
 
-  this.shape.castShadow = true;
-  this.shape.receiveShadow = true;
+  shape.material = this.material;
 };

@@ -1,30 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>three.js canvas - camera - orthographic</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #f0f0f0;
-        margin: 0px;
-        overflow: hidden;
-      }
-    </style>
-  </head>
-  <body>
-    <script src="js/three.min.js"></script>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
+        <title>Babylon - Getting Started</title>
 
-    <script src="js/renderers/Projector.js"></script>
-    <script src="js/renderers/CanvasRenderer.js"></script>
+        <script src="js/babylon_2_3.js"></script>
+        <style>
+            html, body {
+            overflow: hidden;
+            width   : 100%;
+            height  : 100%;
+            margin  : 0;
+            padding : 0;
+            }
 
-    <script src="js/block.js"></script>
-    <script src="js/wall_block.js"></script>
-    <script src="js/door_block.js"></script>
-    <script src="js/bookcase_block.js"></script>
-    <script src="js/pillar_block.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/scene.js"></script>
-  </body>
+            #renderCanvas {
+            width   : 100%;
+            height  : 100%;
+            touch-action: none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="renderCanvas"></canvas>
+
+        <script src="js/block.js"></script>
+        <script src="js/wall_block.js"></script>
+        <script src="js/door_block.js"></script>
+        <script src="js/bookcase_block.js"></script>
+        <script src="js/pillar_block.js"></script>
+        <script src="js/map.js"></script>
+
+        <script src="js/scene.js"></script>
+    </body>
 </html>

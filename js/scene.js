@@ -1,132 +1,95 @@
-var container, stats;
-var camera, scene, renderer;
+window.addEventListener('DOMContentLoaded', function(){
+  // get the canvas DOM element
+  var canvas = document.getElementById('renderCanvas');
 
-init();
-animate();
+  // load the 3D engine
+  var engine = new BABYLON.Engine(canvas, true);
 
-function init() {
-  container = document.createElement( 'div' );
-  document.body.appendChild( container );
-  camera = new THREE.OrthographicCamera(window.innerWidth / - 2,
-                                        window.innerWidth / 2,
-                                        window.innerHeight / 2,
-                                        window.innerHeight / - 2,
-                                        -500,
-                                        1000);
-  camera.position.x = 200;
-  camera.position.y = 150;
-  camera.position.z = 200;
-  scene = new THREE.Scene();
+  // createScene function that creates and return the scene
+  var createScene = function(){
+    // create a basic BJS Scene object
+    var scene = new BABYLON.Scene(engine);
 
-  initGeo();
-  initLights();
+    setup_camera(scene, canvas);
+    setup_lights(scene);
+    setup_geo(scene);
 
-  renderer = new THREE.WebGLRenderer( { antialias: true } );
-  // renderer = new THREE.CanvasRenderer();
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.BasicShadowMap
+    // return the created scene
+    return scene;
+  }
 
-  renderer.setClearColor( 0xf0f0f0 );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  container.appendChild( renderer.domElement );
+  // call the createScene function
+  var scene = createScene();
 
-  window.addEventListener( 'resize', onWindowResize, false );
+  // run the render loop
+  engine.runRenderLoop(function(){
+      scene.render();
+  });
+
+  // the canvas/window resize event handler
+  window.addEventListener('resize', function(){
+      engine.resize();
+  });
+});
+
+var setup_camera = function(scene, canvas) {
+  // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
+  var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(10, 10, -10), scene);
+  camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+
+  camera.orthoTop = 5;
+  camera.orthoBottom = -5;
+  camera.orthoLeft = -10;
+  camera.orthoRight = 10;
+
+  // target the camera to scene origin
+  camera.setTarget(BABYLON.Vector3.Zero());
+
+  // attach the camera to the canvas
+  camera.attachControl(canvas, false);
 }
 
-function initGeo() {
+var setup_lights = function(scene) {
+  // create a basic light, aiming 0,1,0 - meaning, to the sky
+  var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
+}
 
+var setup_geo = function(scene) {
   var map_file = [
-    ['W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','B','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','B','W'],
-    ['W','B','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','B','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','P','_','C','C','_','P','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
+    ['W','W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','B','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','B','W'],
+    ['W','B','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','B','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','P','_','C','C','_','P','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
     ['D','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','D'],
     ['D','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','D'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','P','_','C','C','_','P','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','B','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','B','W'],
-    ['W','B','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','B','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','_','W'],
-    ['W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W','W']
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','P','_','C','C','_','P','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','B','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','B','W'],
+    ['W','B','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','B','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
+    ['W','W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W']
   ]
 
-  var map = new Map(map_file)
-
-  init_ground(map);
-  init_objects(map);
+  setup_ground(map_file, scene);
+  setup_map(map_file, scene);
 }
 
-function init_ground(map) {
-  var geometry = new THREE.PlaneGeometry( 1000, 1000, 20, 20 );
-  var material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );
-  var plane = new THREE.Mesh( geometry, material );
+var setup_ground = function(map, scene){
+  var ground = BABYLON.Mesh.CreateGround('ground1', 10, 10, 2, scene);
+  var material = new BABYLON.StandardMaterial("bookcase", scene);
+  material.diffuseColor = new BABYLON.Color3(.3, .2, .1);
+  ground.material = material
 
-  plane.rotation.x = -Math.PI/2;
-  plane.position.y = 0;
-
-  plane.castShadow = false;
-  plane.receiveShadow = true;
-
-  scene.add( plane );
 }
 
-function init_objects(map) {
-  for ( var i = 0; i < map.width; i ++ ) {
-    for ( var j = 0; j < map.height; j ++ ) {
-      var block = map.blocks[i][j];
-      if (block) {
-        scene.add(block.shape);
-      }
-    }
-  }
-}
-
-function initLights() {
-  var ambientLight = new THREE.AmbientLight( 0x222222 );
-  scene.add( ambientLight );
-
-  var light = new THREE.SpotLight( 0x888888 );
-  light.position.set(-500,200,0)
-  light.castShadow = true;
-  light.shadow.mapSize.width = 256;
-  light.shadow.mapSize.height = 256;
-  light.shadow.camera.far = 1000;
-  light.shadow.camera.near = 300;
-  scene.add( light );
-
-  // var spotLightHelper = new THREE.SpotLightHelper( light );
-  // scene.add( spotLightHelper );
-
-  var light = new THREE.SpotLight( 0xBBBBBB );
-  light.position.set(0,200,0)
-
-  scene.add( light );
-}
-
-function onWindowResize() {
-  camera.left = window.innerWidth / - 2;
-  camera.right = window.innerWidth / 2;
-  camera.top = window.innerHeight / 2;
-  camera.bottom = window.innerHeight / - 2;
-  camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
-function animate() {
-  requestAnimationFrame( animate );
-  render();
-}
-
-function render() {
-  camera.lookAt( scene.position );
-  renderer.render( scene, camera );
+var setup_map = function(map_file, scene){
+  new Map(map_file, scene)
 }
