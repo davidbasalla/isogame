@@ -12,4 +12,7 @@ var Block = function (x, z) {
   this.shape.position.x = this.pos_x;
   this.shape.position.y = this.pos_y;
   this.shape.position.z = this.pos_z;
+
+  this.shape.castShadow = true;
+  this.shape.receiveShadow = true;
 };

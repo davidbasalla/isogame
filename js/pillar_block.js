@@ -1,5 +1,5 @@
 var PillarBlock = function (x, z) {
-  this.geometry = new THREE.CylinderGeometry( 20, 20, 100, 16 );
+  this.geometry = new THREE.CylinderGeometry( 15, 15, 100, 16 );
   this.material = new THREE.MeshLambertMaterial( { color: 0x888888, overdraw: 0.5 } );
 
   this.height = 1;

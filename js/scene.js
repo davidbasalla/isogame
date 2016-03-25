@@ -21,8 +21,11 @@ function init() {
   initGeo();
   initLights();
 
-  renderer = new THREE.CanvasRenderer();
-  renderer.shadowMapEnabled = true;
+  renderer = new THREE.WebGLRenderer( { antialias: true } );
+  // renderer = new THREE.CanvasRenderer();
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.BasicShadowMap
+
   renderer.setClearColor( 0xf0f0f0 );
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
@@ -70,6 +73,9 @@ function init_ground(map) {
   plane.rotation.x = -Math.PI/2;
   plane.position.y = 0;
 
+  plane.castShadow = false;
+  plane.receiveShadow = true;
+
   scene.add( plane );
 }
 
@@ -85,35 +91,25 @@ function init_objects(map) {
 }
 
 function initLights() {
-  var ambientLight = new THREE.AmbientLight( Math.random() * 0x10 );
+  var ambientLight = new THREE.AmbientLight( 0x222222 );
   scene.add( ambientLight );
 
-
-  var light = new THREE.PointLight( 0xffffff, 1, 1000 );
-  light.position.set( 10000, 10000, 5000 );
+  var light = new THREE.SpotLight( 0x888888 );
+  light.position.set(-500,200,0)
   light.castShadow = true;
-
-  // var directionalLight = new THREE.DirectionalLight( Math.random() * 0xffffff );
-  // directionalLight.position.x = Math.random() - 0.5;
-  // directionalLight.position.y = Math.random() - 0.5;
-  // directionalLight.position.z = Math.random() - 0.5;
-  // directionalLight.position.normalize();
-
-  // directionalLight.shadow.camera.right     =  5;
-  // directionalLight.shadow.camera.left     = -5;
-  // directionalLight.shadow.camera.top      =  5;
-  // directionalLight.shadow.camera.bottom   = -5;
-
-  // directionalLight.castShadow = true;
+  light.shadow.mapSize.width = 256;
+  light.shadow.mapSize.height = 256;
+  light.shadow.camera.far = 1000;
+  light.shadow.camera.near = 300;
   scene.add( light );
 
-  // var directionalLight = new THREE.DirectionalLight( Math.random() * 0xffffff );
-  // directionalLight.position.x = Math.random() - 0.5;
-  // directionalLight.position.y = Math.random() - 0.5;
-  // directionalLight.position.z = Math.random() - 0.5;
-  // directionalLight.position.normalize();
-  // directionalLight.castShadow = true;
-  // scene.add( directionalLight );
+  // var spotLightHelper = new THREE.SpotLightHelper( light );
+  // scene.add( spotLightHelper );
+
+  var light = new THREE.SpotLight( 0xBBBBBB );
+  light.position.set(0,200,0)
+
+  scene.add( light );
 }
 
 function onWindowResize() {
@@ -126,7 +122,7 @@ function onWindowResize() {
 }
 
 function animate() {
-  // requestAnimationFrame( animate );
+  requestAnimationFrame( animate );
   render();
 }
 
