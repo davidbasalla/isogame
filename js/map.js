@@ -12,11 +12,22 @@ Map.prototype.parse_map = function() {
     this.blocks.push([])
 
     for ( var j = 0; j < this.height; j ++ ) {
-      if (this.mapfile[i][j] === 'W') {
-        this.blocks[i][j] = new Block(i, j);
-      }
-      else {
-        this.blocks[i][j] = null;
+      switch (this.mapfile[i][j]) {
+        case 'W':
+          this.blocks[i][j] = new WallBlock(i, j);
+          break;
+        case 'D':
+          this.blocks[i][j] = new DoorBlock(i, j);
+          break;
+        case 'B':
+          this.blocks[i][j] = new BookcaseBlock(i, j);
+          break;
+        case 'P':
+          this.blocks[i][j] = new PillarBlock(i, j);
+          break;
+        default:
+          this.blocks[i][j] = null;
+          break;
       }
     }
   }
