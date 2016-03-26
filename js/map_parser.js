@@ -28,6 +28,9 @@ MapParser.prototype.parse = function() {
         case 'P':
           object = new PillarBlock(i, j, rotation, this.scene);
           break;
+        case 'F':
+          object = new BrazierBlock(i, j, rotation, this.scene);
+          break;
         case 'C':
           object = new CarpetTile(i, j, rotation, this.scene);
           break;
