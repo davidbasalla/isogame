@@ -1,6 +1,7 @@
-var WallBlock = function (x, z, scene) {
+var WallBlock = function (x, z, rotation, scene) {
   this.x = x;
   this.z = z;
+  this.rotation = rotation;
   this.scene = scene;
 
   this.material = new BABYLON.StandardMaterial("wall", this.scene);

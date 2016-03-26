@@ -1,6 +1,7 @@
-var BookcaseBlock = function (x, z, scene) {
+var BookcaseBlock = function (x, z, rotation, scene) {
   this.x = x;
   this.z = z;
+  this.rotation = rotation;
   this.scene = scene;
 
   this.material = new BABYLON.StandardMaterial("bookcase", this.scene);

@@ -1,8 +1,10 @@
-var CarpetTile = function (x, z, scene) {
+var CarpetTile = function (x, z, rotation, scene) {
   this.height = .1;
   this.x = x;
   this.y = -.01;
   this.z = z;
+  this.rotation = rotation;
+
   this.scene = scene;
 
   this.material = new BABYLON.StandardMaterial("carpet", this.scene);

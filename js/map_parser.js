@@ -11,21 +11,25 @@ MapParser.prototype.parse = function() {
 
   for ( var i = 0; i < this.width; i ++ ) {
     for ( var j = 0; j < this.height; j ++ ) {
-      switch (this.mapfile[i][j]) {
+      var coord = this.mapfile[i][j];
+      var identifier = coord[0];
+      var rotation = coord[1] || 0;
+
+      switch (identifier) {
         case 'W':
-          object = new WallBlock(i, j, this.scene);
+          object = new WallBlock(i, j, rotation, this.scene);
           break;
         case 'D':
-          object = new DoorBlock(i, j, this.scene);
+          object = new DoorBlock(i, j, rotation, this.scene);
           break;
         case 'B':
-          object = new BookcaseBlock(i, j, this.scene);
+          object = new BookcaseBlock(i, j, rotation, this.scene);
           break;
         case 'P':
-          object = new PillarBlock(i, j, this.scene);
+          object = new PillarBlock(i, j, rotation, this.scene);
           break;
         case 'C':
-          object = new CarpetTile(i, j, this.scene);
+          object = new CarpetTile(i, j, rotation, this.scene);
           break;
         default:
           object = null;
