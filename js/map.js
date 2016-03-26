@@ -1,34 +1,38 @@
-var Map = function (mapfile) {
+var Map = function (mapfile, scene) {
   this.mapfile = mapfile;
   this.width = this.mapfile.length;
   this.height = this.mapfile.length;
   this.blocks = new Array();
-
-  this.parse_map();
+  this.scene = scene;
 };
 
-Map.prototype.parse_map = function() {
-  for ( var i = 0; i < this.width; i ++ ) {
-    this.blocks.push([])
+Map.prototype.parse = function() {
+  var objects = [];
+  var block = null;
 
+  for ( var i = 0; i < this.width; i ++ ) {
     for ( var j = 0; j < this.height; j ++ ) {
       switch (this.mapfile[i][j]) {
         case 'W':
-          this.blocks[i][j] = new WallBlock(i, j);
+          block = new WallBlock(i, j, this.scene);
           break;
         case 'D':
-          this.blocks[i][j] = new DoorBlock(i, j);
+          block = new DoorBlock(i, j, this.scene);
           break;
         case 'B':
-          this.blocks[i][j] = new BookcaseBlock(i, j);
+          block = new BookcaseBlock(i, j, this.scene);
           break;
         case 'P':
-          this.blocks[i][j] = new PillarBlock(i, j);
+          block = new PillarBlock(i, j, this.scene);
           break;
         default:
-          this.blocks[i][j] = null;
+          block = null;
           break;
+      }
+      if (block) {
+        objects.push(block);
       }
     }
   }
+  return objects;
 };

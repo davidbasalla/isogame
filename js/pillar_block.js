@@ -1,11 +1,12 @@
-var PillarBlock = function (x, z) {
-  this.geometry = new THREE.CylinderGeometry( 15, 15, 100, 16 );
-  this.material = new THREE.MeshLambertMaterial( { color: 0x888888, overdraw: 0.5 } );
-
+var PillarBlock = function (x, z, scene) {
   this.height = 1;
   this.x = x;
   this.y = 25;
   this.z = z;
+  this.scene = scene;
+
+  this.material = new BABYLON.StandardMaterial("pillar", this.scene);
+  this.material.diffuseColor = new BABYLON.Color3(.7, .7, .7);
 
   Block.call(this);
 };
