@@ -6,7 +6,8 @@ var SceneBuilder = function (scene, canvas) {
     camera: null,
     lights: [],
     objects: [],
-    ground_objects: []
+    ground_objects: [],
+    player: null
   };
 };
 
@@ -14,7 +15,8 @@ SceneBuilder.prototype.build = function() {
   this.setup_camera();
   this.setup_lights();
   this.setup_geo();
-  this.setup_shadows();
+  this.setup_player();
+
 
   console.log(this.scene_graph);
 
@@ -43,11 +45,10 @@ SceneBuilder.prototype.setup_camera = function() {
 };
 
 SceneBuilder.prototype.setup_lights = function() {
-  // create a basic light, aiming 0,1,0 - meaning, to the sky
   var light = new BABYLON.HemisphericLight('light1', 
                                            new BABYLON.Vector3(0,1,0),
                                            this.scene);
-  light.diffuse = new BABYLON.Color3(.4, .4, .4);
+  light.diffuse = new BABYLON.Color3(.3, .3, .3);
   this.scene_graph["lights"].push(
     {
       light: light,
@@ -82,6 +83,40 @@ SceneBuilder.prototype.setup_lights = function() {
       shadow_gen: spotLight_shadow2
     }
   )
+
+
+  var range = 1;
+  var r = 1, g = .5, b = 0;
+
+  // var pointLight = new BABYLON.PointLight("point0", 
+  //                                    new BABYLON.Vector3(.75, .6, .75),
+  //                                    this.scene);
+  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
+  // pointLight.range = range;
+
+  // var pointLight = new BABYLON.PointLight("point1", 
+  //                                    new BABYLON.Vector3(-.75, .6, .75),
+  //                                    this.scene);
+  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
+  // pointLight.range = range;
+
+  // var pointLight = new BABYLON.PointLight("point2", 
+  //                                    new BABYLON.Vector3(-.75, .6, -.75),
+  //                                    this.scene);
+  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
+  // pointLight.range = range;
+
+  // var pointLight = new BABYLON.PointLight("point3", 
+  //                                    new BABYLON.Vector3(.75, .6, -.75),
+  //                                    this.scene);
+  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
+  // pointLight.range = range;
+
+  // var pointLight0 = new BABYLON.PointLight("point4", 
+  //                                    new BABYLON.Vector3(-4, .6, .75),
+  //                                    this.scene);
+  // pointLight0.diffuse = new BABYLON.Color3(r, g, b);
+  // pointLight0.range = range;
 }
 
 SceneBuilder.prototype.setup_geo = function() {
@@ -117,8 +152,78 @@ SceneBuilder.prototype.setup_map = function(map_file) {
   })
 }
 
+SceneBuilder.prototype.setup_player = function() {
+  var loader = new BABYLON.AssetsManager(this.scene);
+  var load_task = loader.addMeshTask("brazier", "", "assets/obj/", "player_1.obj");
+
+  var _this = this;
+  var player = null;
+  load_task.onSuccess = function() {
+    player = load_task.loadedMeshes[0]
+
+    player.position.x = 0.25;
+    player.position.z = 0.25;
+
+    player.scaling.y = .07;
+    player.scaling.x = .07;
+    player.scaling.z = .07;
+
+    var material = new BABYLON.StandardMaterial("door", _this.scene);
+    material.diffuseColor = new BABYLON.Color3(1, 1, 0);
+
+    player.material = material;
+
+    _this.scene_graph["player"] = player;
+
+    _this.setup_player_movement();
+    _this.setup_shadows();
+  }
+
+  loader.load();
+}
+
+SceneBuilder.prototype.setup_player_movement = function() {
+  var moveVector = new BABYLON.Vector3(0, 0, 0); 
+  var movestep = .5;
+
+  var _this = this;
+  var onKeyDown = function(event) {
+    var player = _this.scene_graph["player"];
+
+    var key = event.keyCode;
+    var ch = String.fromCharCode(key);
+    switch (ch) {
+      case "W":
+        moveVector.x = 0;
+        moveVector.z = movestep;
+        player.moveWithCollisions(moveVector);
+        player.rotation.y = Math.PI * 2;
+        break;
+      case "A":
+        moveVector.z = 0;
+        moveVector.x = -movestep;
+        player.moveWithCollisions(moveVector);
+        player.rotation.y = Math.PI * 1.5;
+        break;
+      case "S":
+        moveVector.x = 0;
+        moveVector.z = -movestep;
+        player.moveWithCollisions(moveVector);
+        player.rotation.y = Math.PI;
+        break;
+      case "D":
+        moveVector.z = 0;
+        moveVector.x = movestep;
+        player.moveWithCollisions(moveVector);
+        player.rotation.y = Math.PI/2;
+        break;
+    }
+  };
+
+  document.addEventListener("keydown", onKeyDown, false);
+}
+
 SceneBuilder.prototype.setup_shadows = function() {
-  console.log(this.scene_graph["ground_objects"])
   this.scene_graph["ground_objects"].forEach(
     function(item) {
       item.receiveShadows = true;
@@ -130,6 +235,7 @@ SceneBuilder.prototype.setup_shadows = function() {
     function(light) {
       if (light["shadow_gen"] !== null){
         var shadow_map = light["shadow_gen"].getShadowMap();
+        shadow_map.renderList.push(_this.scene_graph["player"]);
         _this.assign_objects_to_shadow_map(shadow_map);
       }
     }
