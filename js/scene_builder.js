@@ -55,7 +55,6 @@ SceneBuilder.prototype.setup_lights = function() {
     }
   );
 
-
   var spotLight = new BABYLON.SpotLight("spot01", 
                                      new BABYLON.Vector3(-3, 5, 0),
                                      new BABYLON.Vector3(.5, -1, 0), 5, 12,
@@ -86,44 +85,28 @@ SceneBuilder.prototype.setup_lights = function() {
 }
 
 SceneBuilder.prototype.setup_geo = function() {
-  var map_file = [
-    ['W','W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','B','_','_','_','_','_','P','_','C','C','_','P','_','_','_','_','_','B','W'],
-    ['W','B','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','B','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','P','_','_','P','_','C','C','_','P','_','_','P','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['D','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','D'],
-    ['D','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','D'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','P','_','_','P','_','C','C','_','P','_','_','P','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','B','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','B','W'],
-    ['W','B','_','_','_','_','_','P','_','C','C','_','P','_','_','_','_','_','B','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','_','_','_','_','_','_','_','_','C','C','_','_','_','_','_','_','_','_','W'],
-    ['W','W','W','W','W','W','W','W','W','D','D','W','W','W','W','W','W','W','W','W']
-  ]
+  var map = new Map();
 
-  this.setup_ground(map_file);
-  this.setup_map(map_file);
+  this.setup_ground(map.tiles());
+  this.setup_map(map.blocks());
 }
 
-SceneBuilder.prototype.setup_ground = function(map) {
+SceneBuilder.prototype.setup_ground = function(map_file) {
   var ground = BABYLON.Mesh.CreateGround('ground1', 10, 10, 2, this.scene);
   var material = new BABYLON.StandardMaterial("bookcase", this.scene);
   material.diffuseColor = new BABYLON.Color3(.3, .2, .1);
   ground.material = material
 
   this.scene_graph["ground_objects"].push(ground);
+
+
+  var map = new MapParser(map_file, this.scene);
+
+  this.scene_graph["objects"] = map.parse();
 }
 
 SceneBuilder.prototype.setup_map = function(map_file) {
-  var map = new Map(map_file, this.scene);
+  var map = new MapParser(map_file, this.scene);
 
   this.scene_graph["objects"] = map.parse();
 }
