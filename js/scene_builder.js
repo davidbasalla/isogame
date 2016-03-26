@@ -96,22 +96,29 @@ SceneBuilder.prototype.setup_ground = function(map_file) {
   var material = new BABYLON.StandardMaterial("bookcase", this.scene);
   material.diffuseColor = new BABYLON.Color3(.3, .2, .1);
   ground.material = material
-
   this.scene_graph["ground_objects"].push(ground);
 
-
   var map = new MapParser(map_file, this.scene);
+  tiles = map.parse();
 
-  this.scene_graph["objects"] = map.parse();
+  var _this = this;
+  tiles.forEach(function(tile){
+    _this.scene_graph["ground_objects"].push(tile.shape);
+  })
 }
 
 SceneBuilder.prototype.setup_map = function(map_file) {
   var map = new MapParser(map_file, this.scene);
+  var blocks = map.parse();
 
-  this.scene_graph["objects"] = map.parse();
+  var _this = this;
+  blocks.forEach(function(block){
+    _this.scene_graph["objects"].push(block.shape);
+  })
 }
 
 SceneBuilder.prototype.setup_shadows = function() {
+  console.log(this.scene_graph["ground_objects"])
   this.scene_graph["ground_objects"].forEach(
     function(item) {
       item.receiveShadows = true;
@@ -132,7 +139,7 @@ SceneBuilder.prototype.setup_shadows = function() {
 SceneBuilder.prototype.assign_objects_to_shadow_map = function(shadow_map) {
   this.scene_graph["objects"].forEach(
     function(object) {
-      shadow_map.renderList.push(object.shape);
+      shadow_map.renderList.push(object);
     }
   )
 }

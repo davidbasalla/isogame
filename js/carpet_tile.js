@@ -1,7 +1,7 @@
 var CarpetTile = function (x, z, rotation, scene) {
   this.height = .1;
   this.x = x;
-  this.y = -.01;
+  this.y = -.02;
   this.z = z;
   this.rotation = rotation;
 
