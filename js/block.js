@@ -7,11 +7,11 @@ var Block = function (x, z, scene) {
   this.pos_y = (this.y || 0) + this.height * this.tile_size;
   this.pos_z = this.z * this.tile_size + this.map_offset_z + this.tile_size;
 
-  var shape = BABYLON.Mesh.CreateBox('sphere1', 0.5, this.scene);
-  shape.position.x = this.pos_x;
-  shape.position.y = 0.5;
-  shape.position.z = this.pos_z;
-  shape.scaling.y = 3;
+  this.shape = BABYLON.Mesh.CreateBox('sphere1', 0.5, this.scene);
+  this.shape.position.x = this.pos_x;
+  this.shape.position.y = 0.5;
+  this.shape.position.z = this.pos_z;
+  this.shape.scaling.y = 3;
 
-  shape.material = this.material;
+  this.shape.material = this.material;
 };
