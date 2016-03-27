@@ -152,34 +152,36 @@ SceneBuilder.prototype.setup_map = function(map_file) {
   })
 }
 
+
+
 SceneBuilder.prototype.setup_player = function() {
-  var loader = new BABYLON.AssetsManager(this.scene);
-  var load_task = loader.addMeshTask("brazier", "", "assets/babylon/", "player.babylon");
 
+  // Dude
   var _this = this;
-  var player = null;
-  load_task.onSuccess = function() {
-    player = load_task.loadedMeshes[0]
+  BABYLON.SceneLoader.ImportMesh("him", "assets/babylon/", "dude.babylon", this.scene, function (newMeshes2, particleSystems2, skeletons2) {
+      var dude = newMeshes2[0];
+      
+      var material = new BABYLON.StandardMaterial("door", _this.scene);
+      material.diffuseColor = new BABYLON.Color3(.5, .5, .5);
+      material.specularColor = new BABYLON.Color3(.5, .5, .5);
 
-    player.position.x = 0.25;
-    player.position.z = 0.25;
+      for (var index = 0; index < newMeshes2.length; index++) {
+          // shadowGenerator.getShadowMap().renderList.push(newMeshes2[index]);
+          newMeshes2[index].material = material;
+      }
 
-    player.scaling.y = .07;
-    player.scaling.x = .07;
-    player.scaling.z = .07;
+      var scaling = 0.015;
+      dude.scaling.x = scaling;
+      dude.scaling.y = scaling;
+      dude.scaling.z = scaling;
 
-    var material = new BABYLON.StandardMaterial("door", _this.scene);
-    material.diffuseColor = new BABYLON.Color3(1, 1, 0);
+                _this.scene.beginAnimation(skeletons2[0], 0, 100, true, 1);
 
-    player.material = material;
+      _this.scene_graph["player"] = dude;
+      _this.setup_player_movement();
 
-    _this.scene_graph["player"] = player;
-
-    _this.setup_player_movement();
-    _this.setup_shadows();
-  }
-
-  loader.load();
+          _this.setup_shadows();
+  });
 }
 
 SceneBuilder.prototype.setup_player_movement = function() {
@@ -196,7 +198,12 @@ SceneBuilder.prototype.setup_player_movement = function() {
       case "W":
         moveVector.x = 0;
         moveVector.z = movestep;
-        player.moveWithCollisions(moveVector);
+
+
+        // player.moveWithCollisions(moveVector);
+        player.position.z += 0.05;
+
+
         player.rotation.y = Math.PI;
         break;
       case "A":
