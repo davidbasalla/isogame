@@ -154,7 +154,7 @@ SceneBuilder.prototype.setup_map = function(map_file) {
 
 SceneBuilder.prototype.setup_player = function() {
   var loader = new BABYLON.AssetsManager(this.scene);
-  var load_task = loader.addMeshTask("brazier", "", "assets/obj/", "player_1.obj");
+  var load_task = loader.addMeshTask("brazier", "", "assets/babylon/", "player.babylon");
 
   var _this = this;
   var player = null;
@@ -197,25 +197,25 @@ SceneBuilder.prototype.setup_player_movement = function() {
         moveVector.x = 0;
         moveVector.z = movestep;
         player.moveWithCollisions(moveVector);
-        player.rotation.y = Math.PI * 2;
+        player.rotation.y = Math.PI;
         break;
       case "A":
         moveVector.z = 0;
         moveVector.x = -movestep;
         player.moveWithCollisions(moveVector);
-        player.rotation.y = Math.PI * 1.5;
+        player.rotation.y = Math.PI / 2;
         break;
       case "S":
         moveVector.x = 0;
         moveVector.z = -movestep;
         player.moveWithCollisions(moveVector);
-        player.rotation.y = Math.PI;
+        player.rotation.y = Math.PI * 2;
         break;
       case "D":
         moveVector.z = 0;
         moveVector.x = movestep;
         player.moveWithCollisions(moveVector);
-        player.rotation.y = Math.PI/2;
+        player.rotation.y = Math.PI * 1.5;
         break;
     }
   };
