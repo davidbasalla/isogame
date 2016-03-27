@@ -178,12 +178,12 @@ SceneBuilder.prototype.setup_player = function() {
     meshes[index].material = material;
   }
 
-  this.scene.beginAnimation(player_hash.skeletons[0], 0, 100, true, 1);
+  this.scene.beginAnimation(player_hash.skeletons[0], 0, 100, true, 1.5);
 };
 
 SceneBuilder.prototype.setup_player_movement = function() {
   var moveVector = new BABYLON.Vector3(0, 0, 0); 
-  var movestep = .5;
+  var movestep = .075;
 
   var _this = this;
   var onKeyDown = function(event) {
@@ -194,29 +194,22 @@ SceneBuilder.prototype.setup_player_movement = function() {
     switch (ch) {
       case "W":
         moveVector.x = 0;
-        moveVector.z = movestep;
-
-        // player.moveWithCollisions(moveVector);
-        player.position.z += 0.05;
-
+        player.position.z += movestep;
         player.rotation.y = Math.PI;
         break;
       case "A":
         moveVector.z = 0;
-        moveVector.x = -movestep;
-        player.moveWithCollisions(moveVector);
+        player.position.x += -movestep;
         player.rotation.y = Math.PI / 2;
         break;
       case "S":
         moveVector.x = 0;
-        moveVector.z = -movestep;
-        player.moveWithCollisions(moveVector);
+        player.position.z += -movestep;
         player.rotation.y = Math.PI * 2;
         break;
       case "D":
         moveVector.z = 0;
-        moveVector.x = movestep;
-        player.moveWithCollisions(moveVector);
+        player.position.x += movestep;
         player.rotation.y = Math.PI * 1.5;
         break;
     }
