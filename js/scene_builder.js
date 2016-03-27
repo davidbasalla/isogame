@@ -12,15 +12,32 @@ var SceneBuilder = function (scene, canvas) {
 };
 
 SceneBuilder.prototype.build = function() {
-  this.setup_camera();
-  this.setup_lights();
-  this.setup_geo();
-  this.setup_player();
+  this.preload_player(this.setup_scene);
+}
 
+SceneBuilder.prototype.preload_player = function(callback) {
+  var _this = this;
+  BABYLON.SceneLoader.ImportMesh("him", "assets/babylon/", "dude.babylon", this.scene, function (meshes, particleSystems, skeletons) {
 
-  console.log(this.scene_graph);
+    _this.scene_graph["player"] = {
+      meshes: meshes,
+      particleSystems: particleSystems,
+      skeletons: skeletons
+    }
 
-  return this.scene;
+    callback(_this);
+  });
+}
+
+SceneBuilder.prototype.setup_scene = function(_this) {
+  _this.setup_camera();
+  _this.setup_lights();
+  _this.setup_geo();
+  _this.setup_player();
+  _this.setup_player_movement();
+  _this.setup_shadows();
+
+  _this.onSuccess(_this.scene);
 }
 
 SceneBuilder.prototype.setup_camera = function() {
@@ -83,40 +100,6 @@ SceneBuilder.prototype.setup_lights = function() {
       shadow_gen: spotLight_shadow2
     }
   )
-
-
-  var range = 1;
-  var r = 1, g = .5, b = 0;
-
-  // var pointLight = new BABYLON.PointLight("point0", 
-  //                                    new BABYLON.Vector3(.75, .6, .75),
-  //                                    this.scene);
-  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
-  // pointLight.range = range;
-
-  // var pointLight = new BABYLON.PointLight("point1", 
-  //                                    new BABYLON.Vector3(-.75, .6, .75),
-  //                                    this.scene);
-  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
-  // pointLight.range = range;
-
-  // var pointLight = new BABYLON.PointLight("point2", 
-  //                                    new BABYLON.Vector3(-.75, .6, -.75),
-  //                                    this.scene);
-  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
-  // pointLight.range = range;
-
-  // var pointLight = new BABYLON.PointLight("point3", 
-  //                                    new BABYLON.Vector3(.75, .6, -.75),
-  //                                    this.scene);
-  // pointLight.diffuse = new BABYLON.Color3(r, g, b);
-  // pointLight.range = range;
-
-  // var pointLight0 = new BABYLON.PointLight("point4", 
-  //                                    new BABYLON.Vector3(-4, .6, .75),
-  //                                    this.scene);
-  // pointLight0.diffuse = new BABYLON.Color3(r, g, b);
-  // pointLight0.range = range;
 }
 
 SceneBuilder.prototype.setup_geo = function() {
@@ -152,37 +135,28 @@ SceneBuilder.prototype.setup_map = function(map_file) {
   })
 }
 
-
-
 SceneBuilder.prototype.setup_player = function() {
 
-  // Dude
-  var _this = this;
-  BABYLON.SceneLoader.ImportMesh("him", "assets/babylon/", "dude.babylon", this.scene, function (newMeshes2, particleSystems2, skeletons2) {
-      var dude = newMeshes2[0];
-      
-      var material = new BABYLON.StandardMaterial("door", _this.scene);
-      material.diffuseColor = new BABYLON.Color3(.5, .5, .5);
-      material.specularColor = new BABYLON.Color3(.5, .5, .5);
+  var player_hash = this.scene_graph["player"];
+  var meshes = player_hash["meshes"];
+  var dude = meshes[0];
 
-      for (var index = 0; index < newMeshes2.length; index++) {
-          // shadowGenerator.getShadowMap().renderList.push(newMeshes2[index]);
-          newMeshes2[index].material = material;
-      }
+  var scaling = 0.015;
+  dude.scaling.x = scaling;
+  dude.scaling.y = scaling;
+  dude.scaling.z = scaling;
 
-      var scaling = 0.015;
-      dude.scaling.x = scaling;
-      dude.scaling.y = scaling;
-      dude.scaling.z = scaling;
+  var material = new BABYLON.StandardMaterial("dude", this.scene);
+  material.diffuseColor = new BABYLON.Color3(.5, .5, .5);
+  material.specularColor = new BABYLON.Color3(.5, .5, .5);
 
-                _this.scene.beginAnimation(skeletons2[0], 0, 100, true, 1);
+  for (var index = 0; index < meshes.length; index++) {
+    meshes[index].material = material;
+  }
 
-      _this.scene_graph["player"] = dude;
-      _this.setup_player_movement();
+  this.scene.beginAnimation(player_hash.skeletons[0], 0, 100, true, 1);
+};
 
-          _this.setup_shadows();
-  });
-}
 
 SceneBuilder.prototype.setup_player_movement = function() {
   var moveVector = new BABYLON.Vector3(0, 0, 0); 
@@ -190,7 +164,7 @@ SceneBuilder.prototype.setup_player_movement = function() {
 
   var _this = this;
   var onKeyDown = function(event) {
-    var player = _this.scene_graph["player"];
+    var player = _this.scene_graph["player"]["meshes"][0];
 
     var key = event.keyCode;
     var ch = String.fromCharCode(key);
@@ -199,10 +173,8 @@ SceneBuilder.prototype.setup_player_movement = function() {
         moveVector.x = 0;
         moveVector.z = movestep;
 
-
         // player.moveWithCollisions(moveVector);
         player.position.z += 0.05;
-
 
         player.rotation.y = Math.PI;
         break;
@@ -242,15 +214,15 @@ SceneBuilder.prototype.setup_shadows = function() {
     function(light) {
       if (light["shadow_gen"] !== null){
         var shadow_map = light["shadow_gen"].getShadowMap();
-        shadow_map.renderList.push(_this.scene_graph["player"]);
-        _this.assign_objects_to_shadow_map(shadow_map);
+          _this.assign_objects_to_shadow_map(_this.scene_graph["player"]["meshes"], shadow_map);
+          _this.assign_objects_to_shadow_map(_this.scene_graph["objects"], shadow_map);
       }
     }
   )
 }
 
-SceneBuilder.prototype.assign_objects_to_shadow_map = function(shadow_map) {
-  this.scene_graph["objects"].forEach(
+SceneBuilder.prototype.assign_objects_to_shadow_map = function(objects, shadow_map) {
+  objects.forEach(
     function(object) {
       shadow_map.renderList.push(object);
     }
