@@ -7,9 +7,10 @@ var PillarBlock = function (x, z, rotation, scene) {
   this.scene = scene;
 
   this.material = new BABYLON.StandardMaterial("pillar", this.scene);
-  this.material.diffuseColor = new BABYLON.Color3(.7, .7, .7);
+  this.material.diffuseColor = new BABYLON.Color3(.5, .5, .5);
 
-  this.shape = BABYLON.Mesh.CreateCylinder('scene_elem', 0.5, .5, .5, 6, this.scene);
+  this.shape = BABYLON.Mesh.CreateCylinder('scene_elem', 0.5, .5, .5, 8, this.scene);
+  this.shape.convertToFlatShadedMesh()
 
   SceneElement.call(this);
 };

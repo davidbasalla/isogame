@@ -79,7 +79,7 @@ SceneBuilder.prototype.setup_lights = function() {
   var light = new BABYLON.HemisphericLight('light1', 
                                            new BABYLON.Vector3(0,1,0),
                                            this.scene);
-  light.diffuse = new BABYLON.Color3(.3, .3, .3);
+  light.diffuse = new BABYLON.Color3(.15, .25, .35);
   this.scene_graph["lights"].push(
     {
       light: light,
@@ -88,11 +88,15 @@ SceneBuilder.prototype.setup_lights = function() {
   );
 
   var spotLight = new BABYLON.SpotLight("spot01", 
-                                     new BABYLON.Vector3(-3, 5, 0),
-                                     new BABYLON.Vector3(.5, -1, 0), 5, 12,
+                                     new BABYLON.Vector3(10, 8, 10),
+                                     new BABYLON.Vector3(-2, -1, -2),
+                                     5,
+                                     30,
                                      this.scene);
-  spotLight.diffuse = new BABYLON.Color3(1, 1, 1);
-  var spotLight_shadow = new BABYLON.ShadowGenerator(1024, spotLight);
+  spotLight.diffuse = new BABYLON.Color3(.5, .8, 1);
+  spotLight.specular = new BABYLON.Color3(0 ,0 , 0);
+  spotLight.intensity = .75;
+  var spotLight_shadow = new BABYLON.ShadowGenerator(512, spotLight);
 
   this.scene_graph["lights"].push(
     {
@@ -102,11 +106,15 @@ SceneBuilder.prototype.setup_lights = function() {
   )
 
   var spotLight2 = new BABYLON.SpotLight("spot02", 
-                                     new BABYLON.Vector3(3, 5, 0),
-                                     new BABYLON.Vector3(-.5, -1, 0), 5, 12,
+                                     new BABYLON.Vector3(0, 3, -5),
+                                     new BABYLON.Vector3(0, -1, 3),
+                                     10,
+                                     10,
                                      this.scene);
-  spotLight2.diffuse = new BABYLON.Color3(1, 1, 1);
-  var spotLight_shadow2 = new BABYLON.ShadowGenerator(1024, spotLight2);
+  spotLight2.diffuse = new BABYLON.Color3(1, .55, .1);
+  spotLight2.intensity = 8;
+  spotLight2.range = 10;
+  var spotLight_shadow2 = new BABYLON.ShadowGenerator(2048, spotLight2);
 
   this.scene_graph["lights"].push(
     {
@@ -163,8 +171,8 @@ SceneBuilder.prototype.setup_player = function() {
   dude.scaling.z = scaling;
 
   var material = new BABYLON.StandardMaterial("dude", this.scene);
-  material.diffuseColor = new BABYLON.Color3(.5, .5, .5);
-  material.specularColor = new BABYLON.Color3(.5, .5, .5);
+  material.diffuseColor = new BABYLON.Color3(.3, .3, .3);
+  material.specularColor = new BABYLON.Color3(.3, .3, .3);
 
   for (var index = 0; index < meshes.length; index++) {
     meshes[index].material = material;
