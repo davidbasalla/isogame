@@ -1,7 +1,9 @@
-var MapParser = function (mapfile, scene) {
+var MapParser = function (mapfile, assets, scene) {
   this.mapfile = mapfile;
   this.width = this.mapfile.length;
   this.height = this.mapfile.length;
+
+  this.assets = assets;
   this.scene = scene;
 };
 
@@ -29,7 +31,8 @@ MapParser.prototype.parse = function() {
           object = new PillarBlock(i, j, rotation, this.scene);
           break;
         case 'F':
-          object = new BrazierBlock(i, j, rotation, this.scene);
+          var asset = this.assets[0]["meshes"][0];
+          object = new BrazierBlock(i, j, rotation, asset, this.scene);
           break;
         case 'C':
           object = new CarpetTile(i, j, rotation, this.scene);

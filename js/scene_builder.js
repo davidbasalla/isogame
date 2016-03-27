@@ -12,21 +12,36 @@ var SceneBuilder = function (scene, canvas) {
 };
 
 SceneBuilder.prototype.build = function() {
-  this.preload_player(this.setup_scene);
+  this.preload_assets(this.setup_scene);
 }
 
-SceneBuilder.prototype.preload_player = function(callback) {
-  var _this = this;
-  BABYLON.SceneLoader.ImportMesh("him", "assets/babylon/", "dude.babylon", this.scene, function (meshes, particleSystems, skeletons) {
+SceneBuilder.prototype.preload_assets = function(callback) {
 
-    _this.scene_graph["player"] = {
-      meshes: meshes,
-      particleSystems: particleSystems,
-      skeletons: skeletons
+  var assets = [
+    {
+      id: "him",
+      path: "assets/babylon/",
+      file: "dude.babylon",
+      loader: PreloaderBabylon
+    },
+    {
+      id: "brazier",
+      path: "assets/obj/",
+      file:"brazier.obj",
+      loader: PreloaderOBJ
     }
+  ];
+
+  var asset_manager = new AssetImportManager(assets, this.scene);
+
+  var _this = this;
+  asset_manager.onSuccess = function(scene_graph_assets) {
+    _this.scene_graph["assets"] = scene_graph_assets;
 
     callback(_this);
-  });
+  }
+
+  asset_manager.load();
 }
 
 SceneBuilder.prototype.setup_scene = function(_this) {
@@ -41,7 +56,6 @@ SceneBuilder.prototype.setup_scene = function(_this) {
 }
 
 SceneBuilder.prototype.setup_camera = function() {
-  // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
   var camera = new BABYLON.FreeCamera("camera1", 
                                       new BABYLON.Vector3(10, 10, -10),
                                       this.scene);
@@ -116,7 +130,7 @@ SceneBuilder.prototype.setup_ground = function(map_file) {
   ground.material = material
   this.scene_graph["ground_objects"].push(ground);
 
-  var map = new MapParser(map_file, this.scene);
+  var map = new MapParser(map_file, this.scene_graph["assets"], this.scene);
   tiles = map.parse();
 
   var _this = this;
@@ -126,7 +140,7 @@ SceneBuilder.prototype.setup_ground = function(map_file) {
 }
 
 SceneBuilder.prototype.setup_map = function(map_file) {
-  var map = new MapParser(map_file, this.scene);
+  var map = new MapParser(map_file, this.scene_graph["assets"], this.scene);
   var blocks = map.parse();
 
   var _this = this;
@@ -136,8 +150,10 @@ SceneBuilder.prototype.setup_map = function(map_file) {
 }
 
 SceneBuilder.prototype.setup_player = function() {
+  // need to improve this - turn scene graph into separate object?
+  var player_hash = this.scene_graph["assets"][1];
+  this.scene_graph["player"] = player_hash;
 
-  var player_hash = this.scene_graph["player"];
   var meshes = player_hash["meshes"];
   var dude = meshes[0];
 
@@ -156,7 +172,6 @@ SceneBuilder.prototype.setup_player = function() {
 
   this.scene.beginAnimation(player_hash.skeletons[0], 0, 100, true, 1);
 };
-
 
 SceneBuilder.prototype.setup_player_movement = function() {
   var moveVector = new BABYLON.Vector3(0, 0, 0); 
