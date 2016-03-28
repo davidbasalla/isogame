@@ -21,6 +21,9 @@ MapParser.prototype.parse = function() {
         case 'W':
           object = new WallBlock(i, j, rotation, this.scene);
           break;
+        case 'T':
+          object = new WallthinBlock(i, j, rotation, this.scene);
+          break;
         case 'D':
           object = new DoorBlock(i, j, rotation, this.scene);
           break;

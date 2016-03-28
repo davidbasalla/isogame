@@ -132,7 +132,7 @@ SceneBuilder.prototype.setup_geo = function() {
 }
 
 SceneBuilder.prototype.setup_ground = function(map_file) {
-  var ground = BABYLON.Mesh.CreateGround('ground1', 10, 10, 2, this.scene);
+  var ground = BABYLON.Mesh.CreateGround('ground1', 9.5, 9.5, 2, this.scene);
   var material = new BABYLON.StandardMaterial("bookcase", this.scene);
   material.diffuseColor = new BABYLON.Color3(.3, .2, .1);
   ground.material = material
