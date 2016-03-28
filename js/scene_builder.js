@@ -165,6 +165,10 @@ SceneBuilder.prototype.setup_player = function() {
   var meshes = player_hash["meshes"];
   var dude = meshes[0];
 
+  var offset = 0.25;
+  dude.position.x = offset;
+  dude.position.z = offset;
+
   var scaling = 0.015;
   dude.scaling.x = scaling;
   dude.scaling.y = scaling;
@@ -178,39 +182,32 @@ SceneBuilder.prototype.setup_player = function() {
     meshes[index].material = material;
   }
 
-  this.scene.beginAnimation(player_hash.skeletons[0], 0, 100, true, 1.5);
+  // this.scene.beginAnimation(player_hash.skeletons[0], 0, 100, true, 1.5);
 };
 
 SceneBuilder.prototype.setup_player_movement = function() {
   var moveVector = new BABYLON.Vector3(0, 0, 0); 
   var movestep = .075;
+  var tilesize = 0.5;
+
+  var player = new Player(this.scene_graph["player"], this.scene);
 
   var _this = this;
   var onKeyDown = function(event) {
-    var player = _this.scene_graph["player"]["meshes"][0];
-
     var key = event.keyCode;
     var ch = String.fromCharCode(key);
     switch (ch) {
       case "W":
-        moveVector.x = 0;
-        player.position.z += movestep;
-        player.rotation.y = Math.PI;
+        player.move(new BABYLON.Vector3(0, 0, tilesize));
         break;
       case "A":
-        moveVector.z = 0;
-        player.position.x += -movestep;
-        player.rotation.y = Math.PI / 2;
+        player.move(new BABYLON.Vector3(-tilesize, 0, 0));
         break;
       case "S":
-        moveVector.x = 0;
-        player.position.z += -movestep;
-        player.rotation.y = Math.PI * 2;
+        player.move(new BABYLON.Vector3(0, 0, -tilesize));
         break;
       case "D":
-        moveVector.z = 0;
-        player.position.x += movestep;
-        player.rotation.y = Math.PI * 1.5;
+        player.move(new BABYLON.Vector3(tilesize, 0, 0));
         break;
     }
   };
